@@ -7,7 +7,7 @@ local window, usertext, text, bYes, bNo, gui_state, timer_local, timer_text, mou
 curr_player = nil
 gui_state = false
 timer_local = 30
-mouse_status = false
+mouse_status = false -- Remove this Variable if you use own ScreenClickerEnabler Script
 
 -- Handling request sent from the caller
 net.Receive("ulx_tpa_request", function(len, ply)
@@ -57,7 +57,13 @@ function ulx_request_gui_handling(ply)
 
         window:SetBackgroundColor(Color(0, 0, 0, 176))
         window:SetPos((ScrW() / 2) - 100, 40)
-        window:SetSize(300,105)
+
+        -- I'm doing this beacuse Font on Windows is larger than on Linux
+        if system.IsWindows() then
+            window:SetSize(280, 105)
+        elseif system.IsLinux() then
+            window:SetSize(200, 105)
+        end
 
         -- Do stuff when frame was closed
         window.OnClose = function(s, w, h)
@@ -66,9 +72,11 @@ function ulx_request_gui_handling(ply)
             net.WriteEntity(curr_player)
             net.SendToServer()
 
-             if timer.Exists("ulx_tpa_timeout") && timer.Exists("ulx_tpa_local_timer")then
+            if timer.Exists("ulx_tpa_timeout") then
                 timer.Remove("ulx_tpa_timeout")
+            elseif timer.Exists("ulx_tpa_local_timer") then
                 timer.Remove("ulx_tpa_local_timer")
+                timer_local = 30
             end
 
             checkQueue()
@@ -100,9 +108,11 @@ function ulx_request_gui_handling(ply)
             net.WriteEntity(curr_player)
             net.SendToServer()
 
-            if timer.Exists("ulx_tpa_timeout") && timer.Exists("ulx_tpa_local_timer")then
+            if timer.Exists("ulx_tpa_timeout") then
                 timer.Remove("ulx_tpa_timeout")
+            elseif timer.Exists("ulx_tpa_local_timer") then
                 timer.Remove("ulx_tpa_local_timer")
+                timer_local = 30
             end
 
             checkQueue()
@@ -124,9 +134,11 @@ function ulx_request_gui_handling(ply)
             net.WriteEntity(curr_player)
             net.SendToServer()
 
-            if timer.Exists("ulx_tpa_timeout") && timer.Exists("ulx_tpa_local_timer")then
+            if timer.Exists("ulx_tpa_timeout") then
                 timer.Remove("ulx_tpa_timeout")
+            elseif timer.Exists("ulx_tpa_local_timer") then
                 timer.Remove("ulx_tpa_local_timer")
+                timer_local = 30
             end
 
             checkQueue()
@@ -182,7 +194,7 @@ function checkQueue()
     end
 end
 
--- Only way to use it with mouse
+-- Only way to use it with mouse (Remove it if you use own ScreenClickerEnabler Script)
 hook.Add("PlayerButtonDown", "ulx_tpa_request_clicker", function(ply, butt)
     if ply == LocalPlayer() && butt == KEY_F3 then
         if !mouse_status then
