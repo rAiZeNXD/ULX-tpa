@@ -37,9 +37,11 @@ function ulx_request_gui_handling(ply)
 
     timer.Create("ulx_tpa_local_timer", 1, 30, function()
         timer_local = timer_local - 1
-        timer_text:SetText("Time left: " .. timer_local .. "s")
-        timer_text:SizeToContents()
-        timer_text:SetContentAlignment(4)
+        if timer_text != nil then
+            timer_text:SetText("Time left: " .. timer_local .. "s")
+            timer_text:SizeToContents()
+            timer_text:SetContentAlignment(4)
+        end
         if timer_local == 0 then
             timer_local = 30
         end
@@ -173,8 +175,12 @@ end
 -- Function to call ulx_request_gui_handling if queue is not empty
 function checkQueue()
     -- Remove timer in case overwritten DoClick or DoClose function didnt do that (Security thing)
+
     if timer.Exists("ulx_tpa_timeout") then
         timer.Remove("ulx_tpa_timeout")
+    elseif timer.Exists("ulx_tpa_local_timer") then
+        timer.Remove("ulx_tpa_local_timer")
+        timer_local = 30
     end
 
     curr_player = nil
