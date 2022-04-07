@@ -58,12 +58,13 @@ function ulx_request_gui_handling(ply)
         timer_text = vgui.Create("DLabel", window)
 
         window:SetBackgroundColor(Color(0, 0, 0, 176))
-        window:SetPos((ScrW() / 2) - 100, 40)
 
         -- I'm doing this beacuse Font on Windows is larger than on Linux
         if system.IsWindows() then
+            window:SetPos((ScrW() / 2) - 140, 40)
             window:SetSize(280, 105)
         elseif system.IsLinux() then
+            window:SetPos((ScrW() / 2) - 100, 40)
             window:SetSize(200, 105)
         end
 
@@ -101,7 +102,7 @@ function ulx_request_gui_handling(ply)
         bYes:SetColor(Color(255,255,255))
         bYes:SetFont("ChatFont")
         bYes:SetText("Accept")
-        bYes:SetPos((window:GetWide() / 2) + ((window:GetWide() / 2) / 2) - (bYes:GetWide() / 2), 50)
+        bYes:SetPos((window:GetWide() / 2) + (window:GetWide() * 0.25) - (bYes:GetWide() / 2), 50)
 
         -- Do stuff when accept was clicked
         bYes.DoClick = function(s, w, h)
@@ -127,7 +128,7 @@ function ulx_request_gui_handling(ply)
         bNo:SetColor(Color(255,255,255))
         bNo:SetFont("ChatFont")
         bNo:SetText("Decline")
-        bNo:SetPos((window:GetWide() / 2) - ((window:GetWide() / 2) / 2) - (bYes:GetWide() / 2), 50)
+        bNo:SetPos((window:GetWide() / 2) - (window:GetWide() * 0.25) - (bYes:GetWide() / 2), 50)
 
         -- Do stuff when decline was clicked
         bNo.DoClick = function(s, w, h)
