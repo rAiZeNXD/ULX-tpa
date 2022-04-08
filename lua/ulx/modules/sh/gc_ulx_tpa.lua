@@ -1,7 +1,7 @@
 -- ULX command and handling
 function ulx.tpa(caller, target)
     if SERVER then
-        if target:IsInWorld() && !target:InVehicle() && util.IsInWorld(target:GetPos() - (target:GetAngles():Forward() * 100) then
+        if target:IsInWorld() && !target:InVehicle() && util.IsInWorld(target:GetPos() - (target:GetAngles():Forward() * 100)) then
             net.Start("ulx_tpa_request")
             net.WriteEntity(caller)
             net.Send(target)
