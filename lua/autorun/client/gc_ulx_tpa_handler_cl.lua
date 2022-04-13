@@ -201,15 +201,17 @@ function checkQueue()
     end
 end
 
--- Only way to use it with mouse (Remove it if you use own ScreenClickerEnabler Script)
+-- Remove it if you use own ScreenClickerEnabler Script
 hook.Add("PlayerButtonDown", "ulx_tpa_request_clicker", function(ply, butt)
-    if ply == LocalPlayer() && butt == KEY_F3 then
+    if ply == LocalPlayer() && butt == KEY_F3 && IsFirstTimePredicted() then
         if !mouse_status then
-            mouse_status = true
-            gui.EnableScreenClicker(true)
-        else
-            mouse_status = false
             gui.EnableScreenClicker(false)
+
+        else
+            gui.EnableScreenClicker(true)
         end
+
+        -- Crazy simple trick I found on some YT GLua Tutorial lol
+        mouse_status = !mouse_status
     end
 end)
