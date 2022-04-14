@@ -1,5 +1,7 @@
 if SERVER then
-    include("gc_tpa/server.lua")
     AddCSLuaFile("gc_tpa/client.lua")
+    include("gc_tpa/server.lua")
 end
-print("ee")
+if CLIENT then
+    include("gc_tpa/client.lua")
+end

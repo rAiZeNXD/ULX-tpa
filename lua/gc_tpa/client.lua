@@ -1,7 +1,6 @@
 -- Table to hold additional incoming requests
 local requestQueueTable = {}
 
--- local variables for our GUI elements and current state
 local window, usertext, text, bYes, bNo, gui_state, timer_local, timer_text, mouse_status, curr_player
 
 curr_player = nil
@@ -9,20 +8,36 @@ gui_state = false
 timer_local = 30
 mouse_status = false -- Remove this Variable if you use own ScreenClickerEnabler Script
 
--- Handling request sent from the caller
-net.Receive("ulx_tpa_request", ulx_tpa_request_recieved)
-
-local function ulx_tpa_request_recieved(len, ply)
-    curr_player = net.ReadEntity()
-    if !gui_state then
-        ulx_request_gui_handling(curr_player)
-    else
-        table.insert(requestQueueTable, curr_player)
-    end
-end
-
--- Function that creates our request GUI and handles it
 local function ulx_request_gui_handling(ply)
+
+    -- Function to call ulx_request_gui_handling if queue is not empty
+    local function checkQueue()
+
+        -- Remove timer in case overwritten DoClick or DoClose function didnt do that (Security thing)
+        if timer.Exists("ulx_tpa_timeout") then
+            timer.Remove("ulx_tpa_timeout")
+        elseif timer.Exists("ulx_tpa_local_timer") then
+            timer.Remove("ulx_tpa_local_timer")
+            timer_local = 30
+        end
+
+        curr_player = nil
+
+        if #requestQueueTable > 0 then
+            ulx_request_gui_handling(requestQueueTable[1])
+            table.remove(requestQueueTable, 1)
+        else
+            gui_state = false
+            window:Remove()
+            window = nil
+            text = nil
+            bYes = nil
+            bNo = nil
+            timer_text = nil
+            return
+        end
+    end
+
     -- Setting state to true so that we dont draw oncoming requests
     gui_state = true
     -- Set function argument to local variable beacuse passed by argument isnt accessible in timer, OnClose and DoClick spectrum (or im stupid)
@@ -175,36 +190,16 @@ local function ulx_request_gui_handling(ply)
     end
 end
 
--- Function to call ulx_request_gui_handling if queue is not empty
-local function checkQueue()
-    -- Remove timer in case overwritten DoClick or DoClose function didnt do that (Security thing)
-
-    if timer.Exists("ulx_tpa_timeout") then
-        timer.Remove("ulx_tpa_timeout")
-    elseif timer.Exists("ulx_tpa_local_timer") then
-        timer.Remove("ulx_tpa_local_timer")
-        timer_local = 30
-    end
-
-    curr_player = nil
-
-    if #requestQueueTable > 0 then
-        ulx_request_gui_handling(requestQueueTable[1])
-        table.remove(requestQueueTable, 1)
+local function handle_tpa_request(len, ply)
+   local curr_player = net.ReadEntity()
+    if !gui_state then
+        ulx_request_gui_handling(curr_player)
     else
-        gui_state = false
-        window:Remove()
-        window = nil
-        text = nil
-        bYes = nil
-        bNo = nil
-        timer_text = nil
-        return
+        table.insert(requestQueueTable, curr_player)
     end
 end
 
--- Remove it if you use own ScreenClickerEnabler Script
-hook.Add("PlayerButtonDown", "ulx_tpa_request_clicker", function(ply, butt)
+local function mouse_toggle(ply, butt)
     if ply == LocalPlayer() && butt == KEY_F3 && IsFirstTimePredicted() then
         if !mouse_status then
             gui.EnableScreenClicker(false)
@@ -216,5 +211,9 @@ hook.Add("PlayerButtonDown", "ulx_tpa_request_clicker", function(ply, butt)
         -- Crazy simple trick I found on some YT GLua Tutorial lol
         mouse_status = !mouse_status
     end
-end)
+end
 
+net.Receive("ulx_tpa_request", handle_tpa_request)
+
+-- Remove it if you use own ScreenClickerEnabler Script
+hook.Add("PlayerButtonDown", "ulx_tpa_request_clicker", mouse_toggle)

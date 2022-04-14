@@ -10,7 +10,7 @@ function ulx.tpa(caller, target)
         end
     end
 end
+
 local ulx_tpa = ulx.command("Teleport", "ulx tpa", ulx.tpa, "!tpa")
 ulx_tpa:addParam{type=ULib.cmds.PlayerArg, target="!^", ULib.cmds.ignoreCanTarget}
 ulx_tpa:defaultAccess(ULib.ACCESS_ALL)
-print("added command to ulx lol")
