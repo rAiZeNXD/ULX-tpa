@@ -2,7 +2,7 @@
 local requestQueueTable = {}
 
 -- local variables for our GUI elements and current state
-local window, usertext, text, bYes, bNo, gui_state, timer_local, timer_text, mouse_status
+local window, usertext, text, bYes, bNo, gui_state, timer_local, timer_text, mouse_status, curr_player
 
 curr_player = nil
 gui_state = false
@@ -10,22 +10,24 @@ timer_local = 30
 mouse_status = false -- Remove this Variable if you use own ScreenClickerEnabler Script
 
 -- Handling request sent from the caller
-net.Receive("ulx_tpa_request", function(len, ply)
+net.Receive("ulx_tpa_request", ulx_tpa_request_recieved)
+
+local function ulx_tpa_request_recieved(len, ply)
     curr_player = net.ReadEntity()
     if !gui_state then
         ulx_request_gui_handling(curr_player)
     else
         table.insert(requestQueueTable, curr_player)
     end
-end)
+end
 
 -- Function that creates our request GUI and handles it
-function ulx_request_gui_handling(ply)
+local function ulx_request_gui_handling(ply)
     -- Setting state to true so that we dont draw oncoming requests
     gui_state = true
     -- Set function argument to local variable beacuse passed by argument isnt accessible in timer, OnClose and DoClick spectrum (or im stupid)
     curr_player = ply
-
+    print("recieved")
     -- Timeout
     timer.Create("ulx_tpa_timeout", 30, 1, function()
         net.Start("ulx_tpa_response")
@@ -174,7 +176,7 @@ function ulx_request_gui_handling(ply)
 end
 
 -- Function to call ulx_request_gui_handling if queue is not empty
-function checkQueue()
+local function checkQueue()
     -- Remove timer in case overwritten DoClick or DoClose function didnt do that (Security thing)
 
     if timer.Exists("ulx_tpa_timeout") then
@@ -215,3 +217,4 @@ hook.Add("PlayerButtonDown", "ulx_tpa_request_clicker", function(ply, butt)
         mouse_status = !mouse_status
     end
 end)
+

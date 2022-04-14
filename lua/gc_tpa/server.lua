@@ -5,7 +5,9 @@ util.AddNetworkString("ulx_tpa_request")
 util.AddNetworkString("ulx_tpa_response")
 
 -- Handling responce sent from the target
-net.Receive("ulx_tpa_response", function(len, ply)
+net.Receive("ulx_tpa_response", handle_tpa_responce)
+
+local function handle_tpa_responce(len, ply)
     local tAnwser = net.ReadBool()
     local caller = net.ReadEntity()
 
@@ -14,5 +16,4 @@ net.Receive("ulx_tpa_response", function(len, ply)
     else
         ULib.tsayError(caller, ply:Name() .. " declined your tpa request.", true)
     end
-end)
-
+end
