@@ -8,8 +8,11 @@ local function handle_tpa_responce(len, ply)
     local tAnwser = net.ReadBool()
     local caller = net.ReadEntity()
 
-    if tAnwser then
+    if tAnwser && util.IsInWorld(ply:GetPos() - (ply:GetAngles():Forward() * 100)) then
         caller:SetPos(ply:GetPos() - (ply:GetAngles():Forward() * 100))
+        caller:SetAngles(ply:EyeAngles())
+    elseif !tAnwser && util.IsInWorld(ply:GetPos() - (ply:GetAngles():Forward() * 100)) then
+        ULib.tsayError(caller, ply:Name() .. " is in unreachable place!.", true)
     else
         ULib.tsayError(caller, ply:Name() .. " declined your tpa request.", true)
     end

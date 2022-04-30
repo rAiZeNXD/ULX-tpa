@@ -42,7 +42,6 @@ local function ulx_request_gui_handling(ply)
     gui_state = true
     -- Set function argument to local variable beacuse passed by argument isnt accessible in timer, OnClose and DoClick spectrum (or im stupid)
     curr_player = ply
-    print("recieved")
     -- Timeout
     timer.Create("ulx_tpa_timeout", 30, 1, function()
         net.Start("ulx_tpa_response")
@@ -200,12 +199,11 @@ local function handle_tpa_request(len, ply)
 end
 
 local function mouse_toggle(ply, butt)
-    if ply == LocalPlayer() && butt == KEY_F3 && IsFirstTimePredicted() then
+    if ply == LocalPlayer() && butt == KEY_F3 then
         if !mouse_status then
-            gui.EnableScreenClicker(false)
-
-        else
             gui.EnableScreenClicker(true)
+        else
+            gui.EnableScreenClicker(false)
         end
 
         -- Crazy simple trick I found on some YT GLua Tutorial lol
